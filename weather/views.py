@@ -79,13 +79,33 @@ def user_logout(request):
 from .models import FavoriteLocation
 @login_required
 def favorites(request):
-    try:
-        favorites = FavoriteLocation.objects.filter(user=request.user)
-        context = {'favorites': favorites}
-        return render(request, 'weather/favorites.html', context)
-    except Exception as e:
-        print(f"Error fetching favorites: {e}")  # Check this in your server logs
-        return render(request, 'weather/error.html', {'message': 'Failed to load favorites.'})
+    api_key = os.getenv('WEATHER_API_KEY')
+    favorites = FavoriteLocation.objects.filter(user=request.user)
+    weather_data_list = []
+
+    for favorite in favorites:
+        location = favorite.location
+        if api_key:
+            url = f'http://api.openweathermap.org/data/2.5/weather?q={location}&appid={api_key}&units=metric'
+            response = requests.get(url)
+            if response.status_code == 200:
+                data = response.json()
+                weather_data = {
+                    'location': data['name'],
+                    'temperature': round(data['main']['temp'], 1),
+                    'condition': data['weather'][0]['description'],
+                    'humidity': data['main']['humidity'],
+                    'wind_speed': data['wind']['speed'],
+                    'icon': data['weather'][0]['icon'],
+                }
+                weather_data_list.append(weather_data)
+            else:
+                weather_data_list.append({'location': location, 'error': 'Location not found or API error.'})
+        else:
+            weather_data_list.append({'location': location, 'error': 'API key not found.'})
+
+    context = {'weather_data_list': weather_data_list}
+    return render(request, 'weather/favorites.html', context)
 
 from django.shortcuts import redirect
 
