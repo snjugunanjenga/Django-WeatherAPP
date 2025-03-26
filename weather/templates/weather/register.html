@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - WeatherApp</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Register</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <label for="default_location">Default Location:</label>
+            <input type="text" name="default_location" id="default_location" class="form-control" placeholder="Enter default location">
+            <button type="submit" class="btn btn-primary mt-2">Register</button>
+        </form>
+        <p>Already have an account? <a href="{% url 'login' %}">Login here</a>.</p>
+    </div>
+</body>
+</html>
