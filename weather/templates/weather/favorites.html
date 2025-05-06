@@ -1,0 +1,66 @@
+{% extends 'weather/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-center mb-4">Your Favorite Locations</h1>
+        </div>
+    </div>
+
+    {% if weather_data_list %}
+        <div class="row">
+            {% for weather_data in weather_data_list %}
+                <div class="col-md-4 mb-4">
+                    <div class="weather-card card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ weather_data.location }}</h5>
+                            {% if weather_data.error %}
+                                <div class="alert alert-warning">
+                                    {{ weather_data.error }}
+                                </div>
+                            {% else %}
+                                <div class="text-center mb-3">
+                                    <img src="http://openweathermap.org/img/wn/{{ weather_data.icon }}@2x.png" 
+                                         alt="Weather icon" class="img-fluid">
+                                    <div class="temperature">{{ weather_data.temperature }}°C</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p><strong>Condition:</strong> {{ weather_data.condition }}</p>
+                                        <p><strong>Humidity:</strong> {{ weather_data.humidity }}%</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p><strong>Wind:</strong> {{ weather_data.wind_speed }} m/s</p>
+                                        <p><strong>Visibility:</strong> {{ weather_data.visibility }} km</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <form method="post" action="{% url 'remove_favorite' weather_data.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </form>
+                            <a href="{% url 'index' %}?location={{ weather_data.location }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-sync"></i> Update
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No favorite locations saved yet.
+            </div>
+            <a href="{% url 'index' %}" class="btn btn-primary">
+                <i class="fas fa-search"></i> Search for Locations
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

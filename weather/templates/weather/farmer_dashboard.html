@@ -1,0 +1,110 @@
+{% extends 'weather/base.html' %}
+
+{% block title %}Farmer Dashboard - Kenya Weather App{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-4">Farmer Dashboard</h1>
+        </div>
+    </div>
+
+    <!-- Planting Calendar -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="weather-card card">
+                <div class="card-header">
+                    <h2 class="mb-0">Planting Calendar</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Crop</th>
+                                    <th>Planting Date</th>
+                                    <th>Harvest Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for crop in planting_calendar %}
+                                <tr>
+                                    <td>{{ crop.crop }}</td>
+                                    <td>{{ crop.planting_date }}</td>
+                                    <td>{{ crop.harvest_date }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crop Recommendations -->
+        <div class="col-md-6">
+            <div class="weather-card card">
+                <div class="card-header">
+                    <h2 class="mb-0">Crop Recommendations</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Crop</th>
+                                    <th>Variety</th>
+                                    <th>Suitable Regions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for crop in crop_recommendations %}
+                                <tr>
+                                    <td>{{ crop.crop }}</td>
+                                    <td>{{ crop.variety }}</td>
+                                    <td>{{ crop.suitable_regions|join:", " }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Market Prices -->
+    <div class="row">
+        <div class="col-12">
+            <div class="weather-card card">
+                <div class="card-header">
+                    <h2 class="mb-0">Market Prices</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Crop</th>
+                                    <th>Price</th>
+                                    <th>Unit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for price in market_prices %}
+                                <tr>
+                                    <td>{{ price.crop }}</td>
+                                    <td>KES {{ price.price }}</td>
+                                    <td>{{ price.unit }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

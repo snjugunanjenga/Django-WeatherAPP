@@ -1,39 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Favorites - WeatherApp</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1>Your Favorite Locations</h1>
-        {% if weather_data_list %}
-            <div class="row">
-                {% for weather_data in weather_data_list %}
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ weather_data.location }}</h5>
-                                {% if weather_data.error %}
-                                    <p class="text-danger">{{ weather_data.error }}</p>
-                                {% else %}
-                                    <img src="http://openweathermap.org/img/wn/{{ weather_data.icon }}@2x.png" alt="Weather icon">
-                                    <p>Temperature: {{ weather_data.temperature }}°C</p>
-                                    <p>Condition: {{ weather_data.condition }}</p>
-                                    <p>Humidity: {{ weather_data.humidity }}%</p>
-                                    <p>Wind Speed: {{ weather_data.wind_speed }} m/s</p>
-                                {% endif %}
-                            </div>
+{% extends 'weather/base.html' %}
+
+{% block content %}
+    <h1>Your Favorite Locations</h1>
+    {% if weather_data_list %}
+        <div class="row">
+            {% for weather_data in weather_data_list %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ weather_data.location }}</h5>
+                            {% if weather_data.error %}
+                                <p class="text-danger">{{ weather_data.error }}</p>
+                            {% else %}
+                                <img src="http://openweathermap.org/img/wn/{{ weather_data.icon }}@2x.png" alt="Weather icon">
+                                <p>Temperature: {{ weather_data.temperature }}°C</p>
+                                <p>Condition: {{ weather_data.condition }}</p>
+                                <p>Humidity: {{ weather_data.humidity }}%</p>
+                                <p>Wind Speed: {{ weather_data.wind_speed }} m/s</p>
+                            {% endif %}
                         </div>
                     </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p>No favorite locations saved yet.</p>
-        {% endif %}
-        <a href="{% url 'index' %}" class="btn btn-primary mt-3">Back to Weather</a>
-    </div>
-</body>
-</html>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No favorite locations saved yet.</p>
+    {% endif %}
+    <a href="{% url 'index' %}" class="btn btn-primary mt-3">Back to Weather</a>
+{% endblock %}

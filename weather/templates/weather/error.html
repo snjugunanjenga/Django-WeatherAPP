@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Error</title>
-</head>
-<body>
+{% extends 'weather/base.html' %}
+
+{% block content %}
     <h1>Error</h1>
-    <p>{{ message }}</p>
-    <a href="{% url 'index' %}">Back to Weather</a>
-</body>
-</html>
+    <p>{{ error_message }}</p>
+    <a href="{% url 'index' %}" class="btn btn-primary">Back to Home</a>
+{% endblock %}

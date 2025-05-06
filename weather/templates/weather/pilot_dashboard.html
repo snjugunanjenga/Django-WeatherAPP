@@ -1,0 +1,116 @@
+{% extends 'weather/base.html' %}
+
+{% block title %}Pilot Dashboard - Kenya Weather App{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-4">Pilot Dashboard</h1>
+        </div>
+    </div>
+
+    <!-- Flight Conditions -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="weather-card card">
+                <div class="card-header">
+                    <h2 class="mb-0">Current Flight Conditions</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Airport</th>
+                                    <th>Visibility</th>
+                                    <th>Wind</th>
+                                    <th>Ceiling</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for condition in flight_conditions %}
+                                <tr>
+                                    <td>{{ condition.airport }}</td>
+                                    <td>{{ condition.visibility }}</td>
+                                    <td>{{ condition.wind }}</td>
+                                    <td>{{ condition.ceiling }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Airport Status -->
+        <div class="col-md-6">
+            <div class="weather-card card">
+                <div class="card-header">
+                    <h2 class="mb-0">Airport Status</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Airport</th>
+                                    <th>Status</th>
+                                    <th>Runway Condition</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for status in airport_status %}
+                                <tr>
+                                    <td>{{ status.airport }}</td>
+                                    <td>
+                                        <span class="badge {% if status.status == 'Open' %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ status.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ status.runway_condition }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flight Routes -->
+    <div class="row">
+        <div class="col-12">
+            <div class="weather-card card">
+                <div class="card-header">
+                    <h2 class="mb-0">Popular Flight Routes</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Route</th>
+                                    <th>Distance</th>
+                                    <th>Estimated Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for route in flight_routes %}
+                                <tr>
+                                    <td>{{ route.route }}</td>
+                                    <td>{{ route.distance }}</td>
+                                    <td>{{ route.estimated_time }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

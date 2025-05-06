@@ -1,56 +1,216 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeatherApp</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container mt-5">
-        {% if user.is_authenticated %}
-            <p>Welcome, {{ user.username }}! <a href="{% url 'logout' %}">Logout</a></p>
-        {% else %}
-            <p><a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a></p>
-        {% endif %}
-        <!-- Rest of your index template -->
+{% extends 'weather/base.html' %}
+
+{% block content %}
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <div class="container text-center">
+            <h1>Kenya Weather App</h1>
+            <p class="lead">Real-time weather information for farmers and pilots</p>
+        </div>
     </div>
-    <div class="container mt-5">
-        <h1>Weather Information</h1>
-        <form method="get" class="form-inline">
-            <input type="text" name="location" class="form-control mr-2" placeholder="Enter location">
-            <button type="submit" class="btn btn-primary">Get Weather</button>
-        </form>
+
+    <div class="container">
+        <!-- Location Search -->
+        <div class="row mb-4">
+            <div class="col-md-8 mx-auto">
+                <form method="get" class="d-flex gap-2">
+                    <input type="text" name="location" class="form-control form-control-lg" 
+                           placeholder="Enter location" value="{{ request.GET.location|default:'' }}">
+                    <button type="submit" class="btn btn-primary btn-lg">Get Weather</button>
+                </form>
+            </div>
+        </div>
+
         {% if weather_data %}
-            <div class="mt-3">
-                <h2>Weather in {{ weather_data.location }}</h2>
-                <img src="http://openweathermap.org/img/wn/{{ weather_data.icon }}@2x.png" alt="Weather icon">
-                <p>Temperature: {{ weather_data.temperature }}°C</p>
-                <p>Condition: {{ weather_data.condition }}</p>
-                <p>Humidity: {{ weather_data.humidity }}%</p>
-                <p>Wind Speed: {{ weather_data.wind_speed }} m/s</p>
+            <!-- Current Conditions -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="weather-card card">
+                        <div class="card-header">
+                            <h2 class="mb-0">Current Conditions in {{ weather_data.location }}</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="http://openweathermap.org/img/wn/{{ weather_data.icon }}@2x.png" 
+                                     alt="Weather icon" class="me-3">
+                                <div class="temperature">{{ weather_data.temperature }}°C</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <p><strong>Condition:</strong> {{ weather_data.condition }}</p>
+                                    <p><strong>Humidity:</strong> {{ weather_data.humidity }}%</p>
+                                </div>
+                                <div class="col-6">
+                                    <p><strong>Wind Speed:</strong> {{ weather_data.wind_speed }} m/s</p>
+                                    <p><strong>Visibility:</strong> {{ weather_data.visibility }} km</p>
+                                </div>
+                            </div>
+                            {% if user.is_authenticated %}
+                                <form method="post" action="{% url 'add_favorite' %}" class="mt-3">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="location" value="{{ weather_data.location }}">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-star"></i> Save to Favorites
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weather Map -->
+                <div class="col-md-6">
+                    <div class="weather-card card">
+                        <div class="card-header">
+                            <h2 class="mb-0">Weather Map</h2>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="weather-map" class="weather-map"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forecast & Alerts -->
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="weather-card card">
+                        <div class="card-header">
+                            <h2 class="mb-0">7-Day Forecast</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for day in forecast %}
+                                    <div class="col">
+                                        <div class="text-center">
+                                            <h5>{{ day.date|date:"D" }}</h5>
+                                            <img src="http://openweathermap.org/img/wn/{{ day.icon }}.png" 
+                                                 alt="Weather icon">
+                                            <p class="mb-0">{{ day.temp_max }}°C</p>
+                                            <p class="text-muted">{{ day.temp_min }}°C</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="weather-card card">
+                        <div class="card-header">
+                            <h2 class="mb-0">Weather Alerts</h2>
+                        </div>
+                        <div class="card-body">
+                            {% if alerts %}
+                                {% for alert in alerts %}
+                                    <div class="alert alert-{{ alert.severity }}">
+                                        <h5>{{ alert.title }}</h5>
+                                        <p>{{ alert.description }}</p>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-muted">No active weather alerts</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specialized Information -->
+            <div class="row">
+                {% if user.farmerprofile %}
+                    <!-- Farmer Information -->
+                    <div class="col-md-6">
+                        <div class="weather-card card">
+                            <div class="card-header">
+                                <h2 class="mb-0">Agricultural Information</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <h5>Soil Moisture Forecast</h5>
+                                    <canvas id="soil-moisture-chart"></canvas>
+                                </div>
+                                <div>
+                                    <h5>Planting Recommendations</h5>
+                                    <p>{{ planting_recommendations }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if user.pilotprofile %}
+                    <!-- Pilot Information -->
+                    <div class="col-md-6">
+                        <div class="weather-card card">
+                            <div class="card-header">
+                                <h2 class="mb-0">Aviation Information</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <h5>Wind Shear Risk</h5>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {{ wind_shear_risk }}%">
+                                            {{ wind_shear_risk }}%
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5>METAR/TAF Data</h5>
+                                    <pre class="bg-light p-3">{{ metar_taf_data }}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
         {% elif error_message %}
-            <p class="text-danger mt-3">{{ error_message }}</p>
+            <div class="alert alert-danger">
+                {{ error_message }}
+            </div>
         {% else %}
-            <p class="mt-3">Enter a location to get weather information.</p>
-        {% endif %}
-        {% if weather_data and user.is_authenticated %}
-            <form method="post" action="{% url 'add_favorite' %}" class="mt-3">
-                {% csrf_token %}
-                <input type="hidden" name="location" value="{{ weather_data.location }}">
-                <button type="submit" class="btn btn-success">Save to Favorites</button>
-            </form>
-        {% endif %}
-        {% if user.is_authenticated %}
-            <a href="{% url 'favorites' %}" class="btn btn-info mt-3">View Favorites</a>
-        {% endif %}
-        {% if user.is_authenticated %}
-            <a href="{% url 'set_default_location' %}" class="btn btn-info mt-3">Set Default Location</a>
+            <div class="text-center text-muted">
+                <p>Enter a location to get weather information</p>
+            </div>
         {% endif %}
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        // Initialize weather map
+        if (document.getElementById('weather-map')) {
+            const map = L.map('weather-map').setView([{{ weather_data.lat|default:"-0.0236" }}, 
+                                                     {{ weather_data.lon|default:"37.9062" }}], 8);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            
+            // Add weather station markers
+            {% if weather_stations %}
+                {% for station in weather_stations %}
+                    L.marker([{{ station.lat }}, {{ station.lon }}])
+                     .bindPopup('{{ station.name }}')
+                     .addTo(map);
+                {% endfor %}
+            {% endif %}
+        }
+
+        // Initialize soil moisture chart for farmers
+        if (document.getElementById('soil-moisture-chart')) {
+            const ctx = document.getElementById('soil-moisture-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: {{ soil_moisture_dates|safe }},
+                    datasets: [{
+                        label: 'Soil Moisture (%)',
+                        data: {{ soil_moisture_values|safe }},
+                        borderColor: '#2E7D32',
+                        tension: 0.1
+                    }]
+                }
+            });
+        }
+    </script>
+{% endblock %}

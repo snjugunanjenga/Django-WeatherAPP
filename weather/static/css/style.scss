@@ -1,0 +1,126 @@
+// Variables
+$primary-green: #2E7D32;  // Earthy green for agriculture
+$primary-blue: #1976D2;   // Sky blue for aviation
+$secondary-green: #81C784;
+$secondary-blue: #64B5F6;
+$text-dark: #2C3E50;
+$text-light: #FFFFFF;
+$background-light: #F5F5F5;
+$background-dark: #263238;
+
+// Typography
+$font-family-base: 'Montserrat', sans-serif;
+$font-size-base: 1rem;
+$line-height-base: 1.5;
+
+// Mixins
+@mixin card-shadow {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+    &:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+}
+
+// Base styles
+body {
+    font-family: $font-family-base;
+    color: $text-dark;
+    background-color: $background-light;
+}
+
+// Navigation
+.navbar {
+    background: linear-gradient(135deg, $primary-green, $primary-blue) !important;
+    .navbar-brand {
+        font-weight: 700;
+    }
+}
+
+// Hero section
+.hero-banner {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url('../img/kenya-landscape.jpg') center/cover;
+    color: $text-light;
+    padding: 4rem 0;
+    margin-bottom: 2rem;
+    
+    h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+}
+
+// Weather cards
+.weather-card {
+    @include card-shadow;
+    border-radius: 1rem;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    
+    .card-header {
+        background: linear-gradient(135deg, $primary-blue, $secondary-blue);
+        color: $text-light;
+        font-weight: 600;
+    }
+    
+    .temperature {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+}
+
+// Alerts and badges
+.alert {
+    border-radius: 0.5rem;
+    border: none;
+    
+    &.alert-warning {
+        background-color: #FFF3E0;
+        color: #E65100;
+    }
+    
+    &.alert-danger {
+        background-color: #FFEBEE;
+        color: #C62828;
+    }
+}
+
+// Map container
+.weather-map {
+    height: 400px;
+    border-radius: 1rem;
+    @include card-shadow;
+}
+
+// Tooltips
+.tooltip-icon {
+    color: $primary-blue;
+    cursor: help;
+    margin-left: 0.5rem;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+    .hero-banner {
+        padding: 2rem 0;
+        
+        h1 {
+            font-size: 2rem;
+        }
+    }
+    
+    .weather-card {
+        .temperature {
+            font-size: 2rem;
+        }
+    }
+}
+
+// Footer
+.footer {
+    background-color: $background-dark;
+    color: $text-light;
+    padding: 1.5rem 0;
+} 
