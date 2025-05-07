@@ -20,6 +20,23 @@ WeatherApp is a Django-based web application that provides real-time weather inf
 - **User Dashboard**: Personalized dashboard showing saved locations and weather updates.
 - **Mobile-First Design**: Fully responsive layout that works on all devices.
 
+## Screenshots
+
+### Login Page
+![Login Page](screenshots/LoginPage.PNG)
+
+### Home Page
+![Home Page](screenshots/HomePage.PNG)
+
+### Search Weather
+![Search Weather](screenshots/SearchWeather.PNG)
+
+### Weather Forecasts
+![Weather Forecasts](screenshots/WeatherForecasts.PNG)
+
+### Favourites
+![Favourites](screenshots/Favourites.PNG)
+
 ## Prerequisites
 
 Before running the application, ensure you have the following installed:
